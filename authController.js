@@ -1,6 +1,6 @@
 const User= require('./models/User.js')
 const Role = require('./models/Role.js')
-const  bcrypt  =  require ( 'bcrypt' ) ;
+const bcrypt  =  require ( 'bcrypt' ) ;
 const jwt = require('jsonwebtoken')
 const {validationResult}=require('express-validator');
 const { secret } = require('./config.js');
@@ -21,13 +21,13 @@ class authController {
                 return res.status(400).json({message:"ошибка при регистрации", errors})
             }
             const {username , password}=req.body
-            const candidate=await User.findOne({username,email})
+            const candidate=await User.findOne({username})
             if(candidate){
                 return res.status(400).json({message:"Пользователь с таким именем уже существует"})
             }
             const hashPassword= bcrypt.hashSync(password,4)
             const userRole= await Role.findOne({value:"USER"})
-            const user = new User({username,email, password: hashPassword, roles : [userRole.value]})
+            const user = new User({username, password: hashPassword, roles : [userRole.value]})
             await user.save()
             return res.json({message:"Полбзователь успешно зарегистрирован!"})
 
@@ -54,7 +54,7 @@ class authController {
            return res.json({token})
         } catch (error) {
             console.log(error)
-            res.status(400).json({mssage:'login error'})
+            res.status(400).json({message:'login error'})
         }
     }
 
